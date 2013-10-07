@@ -1,0 +1,60 @@
+#+TITLE: AngularJS Hello World
+#+AUTHOR: Rudolf Olah
+#+EMAIL: omouse@gmail.com
+* Requirements
+
+Our hello world project has the following requirements:
+
+- Node.js
+- AngularJS
+- Bootstrap
+- Karma test runner
+- Jasmine test framework
+
+* Install and Set Up
+** Install AngularJS and Twitter Bootstrap
+Download AngularJS and place it in the =lib/= directory. The =lib/=
+directory is where JavaScript and CSS libraries are placed so that we
+don't get confused between our code and external code that others have
+written.
+
+Our JavaScript is in =js/=, the CSS is in =styles/= and any images go
+into =images/=.
+
+#+name: load-javascripts
+#+begin_src html
+<script src="lib/angularjs-x.y.z.js"></script>
+<script src="js/helloworld/controllers.js"></script>
+<script src="js/helloworld/services.js"></script>
+#+end_src
+
+Download Twitter's Bootstrap framework and place it in =lib/=.
+
+#+name: load-stylesheets
+#+begin_src html
+<link rel="stylesheet" href="lib/bootstrap-x.y.z.css" />
+<link rel="stylesheet" href="styles/helloworld.css" />
+#+end_src
+
+** Install Karma Test Runner and Jasmine
+Jasmine is already installed when you install the Karma Test Runner.
+* Creating a Controller
+* Unit Testing the Controller
+* Creating a Directive
+* Unit Testing the Directive
+* End to End Testing
+* Putting it all together
+#+name: helloworld-html
+#+begin_src html :tangle helloworld.html :noweb yes
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Hello Angular.JS</title>
+  <<load-stylesheets>>
+  <<load-javascripts>>
+</head>
+<body>
+  <<helloworld-controller-html>>
+</body>
+</html>
+#+end_src
