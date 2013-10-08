@@ -1,7 +1,8 @@
 #+TITLE: AngularJS Hello World
 #+AUTHOR: Rudolf Olah
 #+EMAIL: omouse@gmail.com
-* Requirements
+* Before We Begin
+** Requirements
 
 Our hello world project has the following requirements:
 
@@ -12,8 +13,8 @@ Our hello world project has the following requirements:
 - Karma test runner
 - Jasmine test framework
 
-* Install and Set Up
-** Install AngularJS and Twitter Bootstrap
+** Install and Set Up
+*** Install AngularJS and Twitter Bootstrap
 Download [[http://www.angularjs.org/][AngularJS]] and place it in the =lib/= directory. The =lib/=
 directory is where JavaScript and CSS libraries are placed so that we
 don't get confused between our code and external code that others have
@@ -24,9 +25,9 @@ into =images/=.
 
 #+name: load-javascripts
 #+begin_src html
-<script src="lib/angularjs-x.y.z.js"></script>
+<script src="lib/angular-1.0.8/angular.js"></script>
+<script src="js/helloworld/app.js"></script>
 <script src="js/helloworld/controllers.js"></script>
-<script src="js/helloworld/services.js"></script>
 #+end_src
 
 Download [[http://getbootstrap.com/][Twitter's Bootstrap]] framework and place it in =lib/=.
@@ -37,7 +38,7 @@ Download [[http://getbootstrap.com/][Twitter's Bootstrap]] framework and place i
 <link rel="stylesheet" href="styles/helloworld.css" />
 #+end_src
 
-** Install the Express web framework, Karma test runner and Jasmine test framework
+*** Install the Express web framework, Karma test runner and Jasmine test framework
 We create a =package.json= so that we can list the dependencies of our
 project which lets us use =npm= to automatically install them.
 
@@ -57,17 +58,17 @@ project which lets us use =npm= to automatically install them.
 #+end_src
 
 [[http://expressjs.com/][Express]] is a web framework for Node, we'll be using it to serve up the
-templates. [[http://karma-runner.github.io/][Karma]] is a test runner and it includes the [[http://pivotal.github.io/jasmine/][Jasmine]] test
+templates. [[http://karma-runner.github.io/][Karma]] is a test runner and it uses the [[http://pivotal.github.io/jasmine/][Jasmine]] test
 framework. Karma lets us run unit tests and end to end tests. The
 Jasmine test framework gives us functions for unit testing.
 
 Note: You don't have to use the Express web framework, you can use any
 other web server to serve up the tutorial files.
-* Setting up the web server
+*** Setting up the web server
 We need to setup the Express web server to serve up our files. The web
 server runs on port 3000.
 
-#+name app-js
+#+name: app-js
 #+begin_src javascript :tangle app.js :noweb yes :padline no
 var express = require('express');
 var app = express();
@@ -78,14 +79,13 @@ app.use(express.static(__dirname))
 
 app.listen(3000);
 #+end_src
-* Running the web server
+*** Running the web server
 You can run the web server like this:
 
 #+begin_src sh
 node app.js
 #+end_src
-* Creating a Controller
-* Setting up Karma for Unit Testing
+*** Setting up Karma for Unit Testing
 Before we can get to unit testing the controller, we have to create
 configuration file for Karma.
 
@@ -109,12 +109,19 @@ Chrome browsers if they're available:
 ]
 #+end_src
 
-We want Karma to watch all of our unit test files and to reload them
-when they're updated:
+We want Karma to watch all of our library, source and unit-test files
+and to reload them when they're updated. The order of the files is
+important and determines the order they're loaded in. You will want
+the AngularJS library to load first, followed by the source code, and
+then finally the unit-test files.
 
 #+name: karma-config-files
 #+begin_src json
 'files': [
+  'lib/angular-1.0.8/angular.js',
+  'lib/angular-1.0.8/angular-*.js',
+  'lib/angular-1.0.8/angular-mocks.js',
+  'js/**/*.js',
   'tests/*.js'
 ]
 #+end_src
@@ -132,10 +139,208 @@ module.exports = function (config) {
 };
 #+end_src
 
-* Unit Testing the Controller
-* Creating a Directive
-* Unit Testing the Directive
-* End to End Testing
+*** Running the Karma Unit Tests
+You can run the unit tests like this:
+
+#+begin_src sh
+./node_modules/karma/bin/karma start karma.conf.js --auto-watch
+#+end_src
+
+If Karma is installed globally, you can run it like this:
+
+#+begin_src sh
+karma start karma.conf.js --auto-watch
+#+end_src
+
+The =--auto-watch= option will run tests as soon as any source files
+have changed. You can add =autoWatch: true= to the karma configuration
+setup so that you don't have to add =--auto-watch= on the
+command-line.
+* Learning AngularJS
+** Creating the Hello World module
+To begin with, we must create a module that represents the whole
+app. Creating a module helps us avoid polluting the global namespace.
+
+#+name: helloworld-app
+#+begin_src javascript :tangle js/helloworld/app.js :noweb yes :padline no
+angular.module('helloworldApp', []);
+#+end_src
+** Creating a Controller
+In the scope of the Hello World controller, we have a list of books
+and their prices:
+
+#+name: helloworld-controller-books
+#+begin_src javascript
+var books = [
+  {
+    'title': 'Mastering Web Application Development with AngularJS',
+    'price': '35.99'
+  },
+  {
+    'title': 'AngularJS for Dummies',
+    'price': '10.95'
+  },
+  {
+    'title': 'Learn AngularJS in 24 Hours',
+    'price': '29.00'
+  }
+];
+
+$scope.books = books;
+#+end_src
+
+The list of books can be sorted by the title or the price. Books that
+include =booksTitleContains= in their title will be visible, we're
+going to use an empty string or null to specify whether to search the
+books by title or to display all books in the list.
+
+#+name: helloworld-controller-books-modifiers
+#+begin_src javascript
+$scope.booksSortedBy = 'title';
+$scope.booksTitleContains = '';
+#+end_src
+
+And then this is how we get a list of books that has been searched and
+then sorted:
+
+#+name: helloworld-controller-books-search/sort-function
+#+begin_src javascript
+var searchAndSortBooks = function () {
+  var i;
+  var book;
+  var result = [];
+  for (i = 0; i < books.length; i++) {
+    book = books[i];
+    // TODO: logic for searching
+    result.push(books[i]);
+  }
+  // TODO: sort the books
+  $scope.books = result;
+};
+#+end_src
+
+When either the =booksSortedBy= or =booksTitleContains= scope
+variables change, we trigger the function and update the list of books
+that are displayed.
+
+We create the controller as part of the =helloworldApp= module. We
+specify the =$scope= as a dependency and then we pass in a function
+that defines the controller.
+
+#+name: helloworld-controllers
+#+begin_src javascript :tangle js/helloworld/controllers.js :noweb yes :padline no
+angular.module('helloworldApp').controller(
+  'HelloworldCtrl',   // name of the controller
+  [
+    '$scope',         // DI (Dependency Injection) modules
+    function ($scope) { // definition of the controller
+      <<helloworld-controller-books>>
+      <<helloworld-controller-books-modifiers>>
+      <<helloworld-controller-books-search/sort-function>>
+    }
+  ]
+);
+#+end_src
+
+** Unit Testing the Controller
+There are a few moving parts in our controller; we can sort the list
+of books, and we can search for them by title. We need to test both of
+these to make sure that they work and we can do this manually, by
+loading up the page and clicking on and off different buttons and
+visually confirming that the list of books is correct.
+
+This can quickly become tedious when you start adding many more
+controllers. So we want to automate the testing by writing some unit
+tests.
+
+Before each test we want to setup the controller:
+
+#+name: helloworld-controller-unit-test-setup
+#+begin_src javascript
+var $scope;
+var ctrl;
+
+beforeEach(module('helloworldApp'));
+
+beforeEach(inject(function ($rootScope, $controller) {
+  $scope = $rootScope.$new();
+  ctrl = $controller('HelloworldCtrl', { $scope: $scope });
+}));
+#+end_src
+
+The =module= and =inject= functions are defined at the global level
+and within the =angular= object. The [[http://docs.angularjs.org/api/angular.mock.module][module]] function gets the module
+prepared for testing. The [[http://docs.angularjs.org/api/angular.mock.inject][inject]] function injects dependencies which
+provide the functionality required, it allows mock objects to be used
+when testing.
+
+The =$rootScope= dependency provides the function to define a new
+scope for the controller. The =$controller= dependency provides a way
+to look up and create an instance of a controller.
+
+Here's how we test to make sure that the controller, =HelloworldCtrl=,
+exists in the module, =helloworldApp=:
+
+#+name: helloworld-controller-unit-test-existence
+#+begin_src javascript
+it('should have a HelloworldCtrl controller', function () {
+  expect(helloworldApp.HelloworldCtrl).not.to.equal(null);
+});
+#+end_src
+
+Here's how we test the book sorting:
+
+#+name: helloworld-controller-unit-test-sorting
+#+begin_src javascript
+it('sorts books by title in ascending order', function () {
+  var i;
+  scope.booksSortedBy = 'title-ascending';
+  for (i = 0; i < scope.books.length - 1; i++) {
+    expect(scope.books[i].title).toBeLessThan(scope.books[i + 1].title);
+  }
+});
+
+it('sorts books by title in descending order', function () {
+  var i;
+  scope.booksSortedBy = 'title-descending';
+  for (i = 0; i < scope.books.length - 1; i++) {
+    expect(scope.books[i].title).toBeGreaterThan(scope.books[i + 1].title);
+  }
+});
+
+it('sorts books by price in ascending order', function () {
+});
+
+it('sorts books by price in descending order', function () {
+});
+#+end_src
+
+And here's how we test book searching:
+
+#+name: helloworld-controller-unit-test-searching
+#+begin_src javascript
+it('lists all books when searching for null or an empty string', function () {
+});
+
+it('lists only books that contain the search string in their title', function () {
+});
+#+end_src
+
+#+name: helloworld-controller-unit-tests
+#+begin_src javascript :tangle tests/helloworld.controllers.js :noweb yes :padline no
+describe('Hello World Controller', function () {
+  <<helloworld-controller-unit-test-setup>>
+
+  <<helloworld-controller-unit-test-existence>>
+
+  <<helloworld-controller-unit-test-sorting>>
+
+  <<helloworld-controller-unit-test-searching>>
+});
+#+end_src
+** Creating a Directive
+** Unit Testing the Directive
+** End to End Testing
 * Putting it all together
 #+name: helloworld-html
 #+begin_src html :tangle helloworld.html :noweb yes :padline no
