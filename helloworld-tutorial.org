@@ -5,15 +5,16 @@
 
 Our hello world project has the following requirements:
 
-- Node.js
+- Node.js and NPM (Node Package Manager)
 - AngularJS
 - Bootstrap
+- Express web framework
 - Karma test runner
 - Jasmine test framework
 
 * Install and Set Up
 ** Install AngularJS and Twitter Bootstrap
-Download AngularJS and place it in the =lib/= directory. The =lib/=
+Download [[http://www.angularjs.org/][AngularJS]] and place it in the =lib/= directory. The =lib/=
 directory is where JavaScript and CSS libraries are placed so that we
 don't get confused between our code and external code that others have
 written.
@@ -28,7 +29,7 @@ into =images/=.
 <script src="js/helloworld/services.js"></script>
 #+end_src
 
-Download Twitter's Bootstrap framework and place it in =lib/=.
+Download [[http://getbootstrap.com/][Twitter's Bootstrap]] framework and place it in =lib/=.
 
 #+name: load-stylesheets
 #+begin_src html
@@ -36,16 +37,108 @@ Download Twitter's Bootstrap framework and place it in =lib/=.
 <link rel="stylesheet" href="styles/helloworld.css" />
 #+end_src
 
-** Install Karma Test Runner and Jasmine
-Jasmine is already installed when you install the Karma Test Runner.
+** Install the Express web framework, Karma test runner and Jasmine test framework
+We create a =package.json= so that we can list the dependencies of our
+project which lets us use =npm= to automatically install them.
+
+#+name: package.json
+#+begin_src json :tangle package.json :padline no
+{
+  "name": "learning-angularjs",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.4.0",
+    "karma": "0.10.2",
+    "karma-firefox-launcher": "0.1.0",
+    "karma-jasmine": "0.1.3"
+  }
+}
+#+end_src
+
+[[http://expressjs.com/][Express]] is a web framework for Node, we'll be using it to serve up the
+templates. [[http://karma-runner.github.io/][Karma]] is a test runner and it includes the [[http://pivotal.github.io/jasmine/][Jasmine]] test
+framework. Karma lets us run unit tests and end to end tests. The
+Jasmine test framework gives us functions for unit testing.
+
+Note: You don't have to use the Express web framework, you can use any
+other web server to serve up the tutorial files.
+* Setting up the web server
+We need to setup the Express web server to serve up our files. The web
+server runs on port 3000.
+
+#+name app-js
+#+begin_src javascript :tangle app.js :noweb yes :padline no
+var express = require('express');
+var app = express();
+
+// Serves up all files in the current directory
+// NOT SAFE FOR PRODUCTION USE, USE ONLY FOR LOCAL DEVELOPMENT AND TESTING
+app.use(express.static(__dirname))
+
+app.listen(3000);
+#+end_src
+* Running the web server
+You can run the web server like this:
+
+#+begin_src sh
+node app.js
+#+end_src
 * Creating a Controller
+* Setting up Karma for Unit Testing
+Before we can get to unit testing the controller, we have to create
+configuration file for Karma.
+
+We want to set Karma to use Jasmine as our test framework:
+
+#+name: karma-config-test-framework
+#+begin_src json
+'frameworks': [
+  'jasmine'
+]
+#+end_src
+
+And we also want to be able to run the tests within the Firefox and
+Chrome browsers if they're available:
+
+#+name: karma-config-browsers
+#+begin_src json
+'browsers': [
+  'Chrome',
+  'Firefox'
+]
+#+end_src
+
+We want Karma to watch all of our unit test files and to reload them
+when they're updated:
+
+#+name: karma-config-files
+#+begin_src json
+'files': [
+  'tests/*.js'
+]
+#+end_src
+
+Here's how it looks put together:
+
+#+name: karma-config
+#+begin_src json :tangle karma.conf.js :noweb yes :padline no
+module.exports = function (config) {
+  config.set({
+    <<karma-config-test-framework>>,
+    <<karma-config-browsers>>,
+    <<karma-config-files>>
+  });
+};
+#+end_src
+
 * Unit Testing the Controller
 * Creating a Directive
 * Unit Testing the Directive
 * End to End Testing
 * Putting it all together
 #+name: helloworld-html
-#+begin_src html :tangle helloworld.html :noweb yes
+#+begin_src html :tangle helloworld.html :noweb yes :padline no
 <!DOCTYPE HTML>
 <html>
 <head>
