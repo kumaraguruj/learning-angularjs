@@ -1,0 +1,11 @@
+{
+  "name": "learning-angularjs",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.4.0",
+    "karma": "0.10.2",
+    "karma-firefox-launcher": "0.1.0",
+    "karma-jasmine": "0.1.3"
+  }
+}
