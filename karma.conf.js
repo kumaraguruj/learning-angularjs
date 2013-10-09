@@ -10,11 +10,7 @@ module.exports = function (config) {
     'files': [
       // Angular files
       'lib/angular-1.0.8/angular.js',
-      'lib/angular-1.0.8/angular-cookies.js',
-      'lib/angular-1.0.8/angular-loader.js',
-      'lib/angular-1.0.8/angular-resource.js',
-      'lib/angular-1.0.8/angular-santitize.js',
-      'lib/angular-1.0.8/angular-mocks.js',
+      'lib/angular-1.0.8/angular-*.js',
     
       // Hello World source code
       'js/helloworld/app.js',
@@ -22,6 +18,9 @@ module.exports = function (config) {
     
       // Hello World test files
       'tests/*.js'
+    ],
+    'exclude': [
+      'lib/angular-1.0.8/angular-scenario.js'
     ]
   });
 };

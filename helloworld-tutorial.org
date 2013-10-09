@@ -102,11 +102,7 @@ then finally the unit-test files.
 'files': [
   // Angular files
   'lib/angular-1.0.8/angular.js',
-  'lib/angular-1.0.8/angular-cookies.js',
-  'lib/angular-1.0.8/angular-loader.js',
-  'lib/angular-1.0.8/angular-resource.js',
-  'lib/angular-1.0.8/angular-santitize.js',
-  'lib/angular-1.0.8/angular-mocks.js',
+  'lib/angular-1.0.8/angular-*.js',
 
   // Hello World source code
   'js/helloworld/app.js',
@@ -114,6 +110,17 @@ then finally the unit-test files.
 
   // Hello World test files
   'tests/*.js'
+]
+#+end_src
+
+We also need to exclude the angular scenario source file. It's used
+for end-to-end/integration testing and isn't needed for our unit
+tests:
+
+#+name: karma-config-exclude
+#+begin_src json
+'exclude': [
+  'lib/angular-1.0.8/angular-scenario.js'
 ]
 #+end_src
 
@@ -125,7 +132,8 @@ module.exports = function (config) {
   config.set({
     <<karma-config-test-framework>>,
     <<karma-config-browsers>>,
-    <<karma-config-files>>
+    <<karma-config-files>>,
+    <<karma-config-exclude>>
   });
 };
 #+end_src
