@@ -6,10 +6,12 @@
 
 Our hello world project has the following requirements:
 
-- Node.js and NPM (Node Package Manager)
-- AngularJS
-- Karma test runner
-- Jasmine test framework
+- [[http://nodejs.org/][Node.js]] and [[https://npmjs.org/][NPM (Node Package Manager)]]
+- [[http://angularjs.org/][AngularJS]]
+- [[http://karma-runner.github.io/][Karma]] test runner
+- [[http://pivotal.github.io/jasmine/][Jasmine]] unit test framework
+
+Note: Node.js is only used for running Karma and Jasmine.
 
 ** Install and Set Up
 *** Install AngularJS
