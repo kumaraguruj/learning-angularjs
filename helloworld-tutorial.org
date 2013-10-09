@@ -163,6 +163,76 @@ setup so that you don't have to add =--auto-watch= on the
 command-line.
 * Learning AngularJS
 ** Creating the Hello World module
+** Concepts
+*** Directives
+Directives are specialized reusuable HTML elements. They contain code
+for manipulating the DOM and for adding events.
+
+**** Example: ng-repeat
+For example, the ng-repeat directive will repeat whatever child
+elements it contains.
+
+#+begin_src html
+<div ng-repeat="person in people">
+  <h2>{{ person.fullName }}</h2>
+  <p>{{ person.firstName }} is {{ person.age }} years old.</p>
+  <p>Address: {{ person.address }}</p>
+</div>
+#+end_src
+
+Expands into:
+
+#+begin_src html
+<div ng-repeat="person in people">
+  <h2>Alice Example</h2>
+  <p>Alice is 30 years old.</p>
+  <p>Address: 1 Some St., Boston, MA, United States of America</p>
+  <h2>Bob Sample</h2>
+  <p>Bob is 32 years old.</p>
+  <p>Address: 876 Another St., Toronto, ON, Canada</p>
+</div>
+#+end_src
+
+**** Example: ng-click
+Another example; the ng-click directive won't modify the HTML but it
+will bind a function to the click event on the element.
+
+#+begin_src html
+<button ng-click="alert('hello world')">Click me</button>
+#+end_src
+
+Expands into the same HTML but when you click, an alert will pop up that says "hello world":
+
+#+begin_src html
+<button ng-click="alert('hello world')">Click me</button>
+#+end_src
+*** Controllers
+A controller is an object that controls what data is displayed in the
+app and how the user can interact with the app. A controller can fetch
+data from a server and put it into its scope so that the data can be
+displayed. When a user clicks on a button, the controller contains the
+function that will be executed on that click.
+*** Expressions
+Angular expressions is code within within curly braces. You can put
+math expressions in them, refer to variables within the controller's
+scope, and run variables through filters among other things.
+*** Filters
+Filters are functions for reformatting variables or other data that is
+passed to them. The most commonly used filters are for formatting how
+a date is displayed and for displaying a decimal number as a currency.
+
+**** Example: currency
+
+#+begin_src html
+{{ '25.09' | currency }}
+#+end_src
+
+After filtering it turns into this:
+
+#+begin_src html
+$25.09
+#+end_src
+
 To begin with, we must create a module that represents the whole
 app. Creating a module helps us avoid polluting the global namespace.
 
