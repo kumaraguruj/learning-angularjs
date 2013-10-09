@@ -162,7 +162,6 @@ have changed. You can add =autoWatch: true= to the karma configuration
 setup so that you don't have to add =--auto-watch= on the
 command-line.
 * Learning AngularJS
-** Creating the Hello World module
 ** Concepts
 *** Directives
 Directives are specialized reusuable HTML elements. They contain code
@@ -233,6 +232,7 @@ After filtering it turns into this:
 $25.09
 #+end_src
 
+** Defining the Hello World module
 To begin with, we must create a module that represents the whole
 app. Creating a module helps us avoid polluting the global namespace.
 
@@ -240,13 +240,30 @@ app. Creating a module helps us avoid polluting the global namespace.
 #+begin_src javascript :tangle js/helloworld/app.js :noweb yes :padline no
 angular.module('helloworldApp', []);
 #+end_src
-** Creating a Controller
-In the scope of the Hello World controller, we have a list of books
-and their prices:
+** Using the Hello World module
+After defining the app's module, we can use it on our site by
+specifiying it as the value for the =ng-app= attribute in the
+top-level =html= element:
+
+#+name: helloworld-app-html
+#+begin_src html
+<html ng-app="helloworldApp">
+#+end_src
+
+This will give us access to any controllers, directives, services,
+filters and other objects that are part of the helloworldApp.
+
+Note: There can only be one ng-app declared on a page.
+** Defining a Controller
+We're going to define our own controller, the HelloworldCtrl, which
+contains a list of books. Each book has a title and a price that we're
+going to display. We're going to be able to sort the books by their
+title and price and we're also going to be able to search through the
+book titles.
 
 #+name: helloworld-controller-books
 #+begin_src javascript
-var books = [
+this.books = [
   {
     'title': 'Mastering Web Application Development with AngularJS',
     'price': '35.99'
@@ -258,46 +275,110 @@ var books = [
   {
     'title': 'Learn AngularJS in 24 Hours',
     'price': '29.00'
+  },
+  {
+    'title': 'Learn AngularJS in 24 Hours, 2nd Edition',
+    'price': '32.00'
   }
 ];
 
+var books = this.books;
 $scope.books = books;
 #+end_src
 
+Typically, this data would be fetched from a server using a REST
+API. In this tutorial, we're simplifying things and providing all the
+data to the controller that we want to work with.
+
+To make unit testing easier, we add the mock data as a property of the
+controller object. A reference to the mock data is stored so that
+there are no binding issues when using the =this= keyword (A List
+Apart has a good article on this, [[http://alistapart.com/article/getoutbindingsituations]["Getting Out of Binding Situations
+in JavaScript"]]).
+
+*** Sorting and Searching the Books
 The list of books can be sorted by the title or the price. Books that
 include =booksTitleContains= in their title will be visible, we're
 going to use an empty string or null to specify whether to search the
 books by title or to display all books in the list.
 
-#+name: helloworld-controller-books-modifiers
+#+name: helloworld-controller-books-search/sort-scope
 #+begin_src javascript
-$scope.booksSortedBy = 'title';
+$scope.booksSortedBy = 'title-ascending';
 $scope.booksTitleContains = '';
 #+end_src
 
-And then this is how we get a list of books that has been searched and
-then sorted:
+Then we have to sort and search the list of books so that we know what
+to display:
 
 #+name: helloworld-controller-books-search/sort-function
 #+begin_src javascript
 var searchAndSortBooks = function () {
   var i;
-  var book;
+  var searchTitleRegExp;
   var result = [];
-  for (i = 0; i < books.length; i++) {
-    book = books[i];
-    // TODO: logic for searching
-    result.push(books[i]);
+
+  // Searching for titles containing the search string
+  if ($scope.booksTitleContains && $scope.booksTitleContains != '') {
+    searchTitleRegExp = new RegExp($scope.booksTitleContains, 'i');
+    for (i = 0; i < books.length; i++) {
+      if (searchTitleRegExp.test(books[i].title)) {
+        result.push(books[i]);
+      }
+    }
+  } else {
+    result = books;
   }
-  // TODO: sort the books
+
+  // Sorting the books
+  // TODO
+
   $scope.books = result;
 };
+
+searchAndSortBooks();
 #+end_src
 
 When either the =booksSortedBy= or =booksTitleContains= scope
 variables change, we trigger the function and update the list of books
-that are displayed.
+that are displayed. To do that, we use the =$watch= method in the
+=$scope= object. It will watch for changes in the given expression and
+execute whatever callback function we provide.
 
+#+name: helloworld-controller-books-search/sort-watch
+#+begin_src javascript
+$scope.$watch(
+  'booksSortedBy + "," + booksTitleContains',
+  function (newValue, oldValue) {
+    searchAndSortBooks();
+  }
+);
+#+end_src
+
+Initially, the expression that is watched will look like this:
+
+#+begin_src javascript
+title-ascending,
+#+end_src
+
+When we start entering a title to search for, the expression being
+watched will change:
+
+#+begin_src javascript
+title-ascending,simple title
+#+end_src
+
+When we change how we sort the books, the expression again will
+change:
+
+#+begin_src javascript
+price-descending,my favourite book
+#+end_src
+
+Whenever that expression changes, the callback function that we
+provided will be executed.
+
+*** Putting it all together
 We create the controller as part of the =helloworldApp= module. We
 specify the =$scope= as a dependency and then we pass in a function
 that defines the controller.
@@ -310,11 +391,97 @@ angular.module('helloworldApp').controller(
     '$scope',         // DI (Dependency Injection) modules
     function ($scope) { // definition of the controller
       <<helloworld-controller-books>>
-      <<helloworld-controller-books-modifiers>>
+      <<helloworld-controller-books-search/sort-scope>>
       <<helloworld-controller-books-search/sort-function>>
+      <<helloworld-controller-books-search/sort-watch>>
     }
   ]
 );
+#+end_src
+
+** Using the Controller
+Once we have defined the controller, we can use it in our app. The
+=HelloworldCtrl= is our top-level controller.
+
+#+name: helloworld-controller-div-html
+#+begin_src html
+<div ng-controller="HelloworldCtrl">
+#+end_src
+
+*** Displaying the books
+We're going to display the list of books in a table using the
+Angular's [[http://docs.angularjs.org/api/ng.directive:ngRepeat][ng-repeat]] directive which will loop through each book. We
+can use the [[http://docs.angularjs.org/api/ng.directive:ngBind][ng-bind]] directive to display the book's title or price, or
+we can use an [[http://docs.angularjs.org/guide/expression][Angular expression]]. We'll use both, =ng-bind= for the
+title and an expression for the price. The price will be formatted
+using the [[http://docs.angularjs.org/api/ng.filter:currency][currency filter]].
+
+#+name: helloworld-controller-books-list-html
+#+begin_src html
+<table>
+  <thead>
+    <th>Title</th>
+    <th>Price</th>
+  </thead>
+  <tbody>
+    <tr ng-repeat="book in books">
+      <td ng-bind="book.title"></td>
+      <td>{{ book.price | currency }}</td>
+    </tr>
+  </tbody>
+</table>
+#+end_src
+
+*** Sorting the books
+To sort the books, there will be a drop down menu. It contains all
+possible sorting options. When one of these options is selected, the
+variable =booksSortedBy= in the =HelloworldCtrl= controller's scope
+will be updated to whatever the value of the option is.
+
+#+name: helloworld-controller-books-sort-html
+#+begin_src html
+<p>Sort by:
+  <select ng-model="booksSortedBy">
+    <option value="title-ascending">Title: Ascending</option>
+    <option value="title-descending">Title: Descending</option>
+    <option value="price-ascending">Price: Low to High</option>
+    <option value="price-descending">Price: High to Low</option>
+  </select>
+</p>
+#+end_src
+
+When you select "Price: High to Low", the value of
+=$scope.booksSortedBy= is "price-descending".
+
+*** Searching the books
+When we enter text into the search box, the =booksTitleContains=
+variable in the scope will be set to whatever value we entered. Since
+we're watching the value, the search will automatically be executed.
+
+The clear button makes it faster to stop the search and to display all
+books.
+
+#+name: helloworld-controller-books-search-html
+#+begin_src html
+<p>
+  <input type="text" ng-model="booksTitleContains"></input>
+  <button ng-click="booksTitleContains = null">Clear</button>
+</p>
+#+end_src
+
+*** Putting it all together
+
+Putting it all together we get:
+
+#+name: helloworld-controller-html
+#+begin_src html
+<<helloworld-controller-div-html>>
+  <h1>Hello World!</h1>
+  <h2>Books</h2>
+  <<helloworld-controller-books-search-html>>
+  <<helloworld-controller-books-sort-html>>
+  <<helloworld-controller-books-list-html>>
+</div>
 #+end_src
 
 ** Unit Testing the Controller
@@ -328,18 +495,19 @@ This can quickly become tedious when you start adding many more
 controllers. So we want to automate the testing by writing some unit
 tests.
 
+*** Setup Before Each Test
 Before each test we want to setup the controller:
 
 #+name: helloworld-controller-unit-test-setup
 #+begin_src javascript
-var $scope;
+var scope;
 var ctrl;
 
 beforeEach(module('helloworldApp'));
 
 beforeEach(inject(function ($rootScope, $controller) {
-  $scope = $rootScope.$new();
-  ctrl = $controller('HelloworldCtrl', { $scope: $scope });
+  scope = $rootScope.$new();
+  ctrl = $controller('HelloworldCtrl', { $scope: scope });
 }));
 #+end_src
 
@@ -353,23 +521,26 @@ The =$rootScope= dependency provides the function to define a new
 scope for the controller. The =$controller= dependency provides a way
 to look up and create an instance of a controller.
 
+*** Test to Make Sure the Controller Exists
 Here's how we test to make sure that the controller, =HelloworldCtrl=,
 exists in the module, =helloworldApp=:
 
 #+name: helloworld-controller-unit-test-existence
 #+begin_src javascript
 it('should have a HelloworldCtrl controller', function () {
-  expect(helloworldApp.HelloworldCtrl).not.to.equal(null);
+  expect(ctrl).not.toBe(null);
 });
 #+end_src
 
-Here's how we test the book sorting:
+*** Tests for Book Sorting
+Here's how we test the book sorting.
 
 #+name: helloworld-controller-unit-test-sorting
 #+begin_src javascript
 it('sorts books by title in ascending order', function () {
   var i;
   scope.booksSortedBy = 'title-ascending';
+  scope.$apply();
   for (i = 0; i < scope.books.length - 1; i++) {
     expect(scope.books[i].title).toBeLessThan(scope.books[i + 1].title);
   }
@@ -378,29 +549,73 @@ it('sorts books by title in ascending order', function () {
 it('sorts books by title in descending order', function () {
   var i;
   scope.booksSortedBy = 'title-descending';
+  scope.$apply();
   for (i = 0; i < scope.books.length - 1; i++) {
     expect(scope.books[i].title).toBeGreaterThan(scope.books[i + 1].title);
   }
 });
 
 it('sorts books by price in ascending order', function () {
+  var i;
+  scope.booksSortedBy = 'price-ascending';
+  scope.$apply();
+  for (i = 0; i < scope.books.length - 1; i++) {
+    expect(scope.books[i].price).toBeLessThan(scope.books[i + 1].price);
+  }
 });
 
 it('sorts books by price in descending order', function () {
+  var i;
+  scope.booksSortedBy = 'price-descending';
+  scope.$apply();
+  for (i = 0; i < scope.books.length - 1; i++) {
+    expect(scope.books[i].price).toBeGreaterThan(scope.books[i + 1].price);
+  }
 });
 #+end_src
 
-And here's how we test book searching:
+Note that after changing a scope variable, we have to call [[http://docs.angularjs.org/api/ng.$rootScope.Scope#$apply][the $apply
+method]]. This is part of the Angular life cycle and it handles
+exceptions and then executes any =$watch= expressions that we have
+setup.
+
+*** Tests for Book Searching
+Here's how we test book searching:
 
 #+name: helloworld-controller-unit-test-searching
 #+begin_src javascript
 it('lists all books when searching for null or an empty string', function () {
+  scope.booksTitleContains = '';
+  scope.$apply();
+  expect(scope.books.length).toBe(ctrl.books.length);
+
+  scope.booksTitleContains = null;
+  scope.$apply();
+  expect(scope.books.length).toBe(ctrl.books.length);
 });
 
 it('lists only books that contain the search string in their title', function () {
+  scope.booksTitleContains = 'Web';
+  scope.$apply();
+  expect(scope.books.length).toBe(1);
+  expect(scope.books[0].title).toMatch('Web');
+
+  scope.booksTitleContains = 'AngularJS';
+  scope.$apply();
+  expect(scope.books.length).toBe(ctrl.books.length);
+  expect(scope.books[1].title).toMatch('AngularJS');
+
+  scope.booksTitleContains = 'Learn AngularJS';
+  scope.$apply();
+  expect(scope.books.length).toBe(2);
+  expect(scope.books[0].title).toMatch('Learn AngularJS');
 });
 #+end_src
 
+Note that again, after changing the $scope variable, we have to call
+$apply to go through the Angular life cycle.
+
+*** Putting it all together
 #+name: helloworld-controller-unit-tests
 #+begin_src javascript :tangle tests/helloworld.controllers.js :noweb yes :padline no
 describe('Hello World Controller', function () {
@@ -413,14 +628,14 @@ describe('Hello World Controller', function () {
   <<helloworld-controller-unit-test-searching>>
 });
 #+end_src
-** Creating a Directive
+** Defining a Directive
 ** Unit Testing the Directive
 ** End to End Testing
 * Putting it all together
 #+name: helloworld-html
 #+begin_src html :tangle helloworld.html :noweb yes :padline no
 <!DOCTYPE HTML>
-<html>
+<<helloworld-app-html>>
 <head>
   <title>Hello Angular.JS</title>
   <<load-stylesheets>>
