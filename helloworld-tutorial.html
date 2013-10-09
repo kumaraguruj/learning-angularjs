@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="AngularJS Hello World"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2013-10-09 16:54:30 EDT"/>
+<meta name="generated" content="2013-10-09 17:31:13 EDT"/>
 <meta name="author" content="Rudolf Olah"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -336,11 +336,7 @@ then finally the unit-test files.
 <pre class="example">'files': [
   // Angular files
   'lib/angular-1.0.8/angular.js',
-  'lib/angular-1.0.8/angular-cookies.js',
-  'lib/angular-1.0.8/angular-loader.js',
-  'lib/angular-1.0.8/angular-resource.js',
-  'lib/angular-1.0.8/angular-santitize.js',
-  'lib/angular-1.0.8/angular-mocks.js',
+  'lib/angular-1.0.8/angular-*.js',
 
   // Hello World source code
   'js/helloworld/app.js',
@@ -348,6 +344,20 @@ then finally the unit-test files.
 
   // Hello World test files
   'tests/*.js'
+]
+</pre>
+
+
+<p>
+We also need to exclude the angular scenario source file. It's used
+for end-to-end/integration testing and isn't needed for our unit
+tests:
+</p>
+
+
+
+<pre class="example">'exclude': [
+  'lib/angular-1.0.8/angular-scenario.js'
 ]
 </pre>
 
@@ -370,11 +380,7 @@ Here's how it looks put together:
     'files': [
       // Angular files
       'lib/angular-1.0.8/angular.js',
-      'lib/angular-1.0.8/angular-cookies.js',
-      'lib/angular-1.0.8/angular-loader.js',
-      'lib/angular-1.0.8/angular-resource.js',
-      'lib/angular-1.0.8/angular-santitize.js',
-      'lib/angular-1.0.8/angular-mocks.js',
+      'lib/angular-1.0.8/angular-*.js',
 
       // Hello World source code
       'js/helloworld/app.js',
@@ -382,6 +388,9 @@ Here's how it looks put together:
 
       // Hello World test files
       'tests/*.js'
+    ],
+    'exclude': [
+      'lib/angular-1.0.8/angular-scenario.js'
     ]
   });
 };
@@ -1376,7 +1385,7 @@ $apply to go through the Angular life cycle.
 </div>
 
 <div id="postamble">
-<p class="date">Date: 2013-10-09 16:54:30 EDT</p>
+<p class="date">Date: 2013-10-09 17:31:13 EDT</p>
 <p class="author">Author: Rudolf Olah</p>
 <p class="creator">Org version 7.8.11 with Emacs version 24</p>
 <a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
