@@ -14,14 +14,25 @@ Our hello world project has the following requirements:
 Note: Node.js is only used for running Karma and Jasmine.
 
 ** Install and Set Up
-*** Install AngularJS
-Download [[http://www.angularjs.org/][AngularJS]] and place it in the =lib/= directory. The =lib/=
+*** Project Structure
+AngularJS doesn't impose any particular project structure on you.
+
+For this tutorial, the following project structure is used:
+- lib/
+- images/
+- js/
+  - helloworld/
+- styles/
+- tests/
+
+JavaScript source code is in =js/=, the CSS is in =styles/= and any
+images go into =images/=. Test code is in =tests/=. The =lib/=
 directory is where JavaScript and CSS libraries are placed so that we
 don't get confused between our code and external code that others have
 written.
 
-Our JavaScript is in =js/=, the CSS is in =styles/= and any images go
-into =images/=.
+*** Install AngularJS
+Download [[http://www.angularjs.org/][AngularJS]] and place it in the =lib/= directory.
 
 #+name: load-javascripts
 #+begin_src html
