@@ -36,7 +36,7 @@ describe('Hello World Controller', function () {
     scope.booksSortedBy = 'price-ascending';
     scope.$apply();
     for (i = 0; i < scope.books.length - 1; i++) {
-      expect(scope.books[i].price).toBeLessThan(scope.books[i + 1].price);
+      expect(parseFloat(scope.books[i].price)).toBeLessThan(parseFloat(scope.books[i + 1].price));
     }
   });
   
@@ -45,7 +45,7 @@ describe('Hello World Controller', function () {
     scope.booksSortedBy = 'price-descending';
     scope.$apply();
     for (i = 0; i < scope.books.length - 1; i++) {
-      expect(scope.books[i].price).toBeGreaterThan(scope.books[i + 1].price);
+      expect(parseFloat(scope.books[i].price)).toBeGreaterThan(parseFloat(scope.books[i + 1].price));
     }
   });
 

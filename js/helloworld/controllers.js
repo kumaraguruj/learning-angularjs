@@ -55,9 +55,9 @@ angular.module('helloworldApp').controller(
           });
         } else if ($scope.booksSortedBy.match(/price/)) {
           $scope.books.sort(function (a, b) {
-            if (a.price < b.price) {
+            if (parseFloat(a.price) < parseFloat(b.price)) {
               return -1;
-            } else if (a.price > b.price) {
+            } else if (parseFloat(a.price) > parseFloat(b.price)) {
               return 1;
             }
             return 0;
