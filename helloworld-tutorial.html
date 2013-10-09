@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="AngularJS Hello World"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2013-10-09 16:23:23 EDT"/>
+<meta name="generated" content="2013-10-09 16:54:30 EDT"/>
 <meta name="author" content="Rudolf Olah"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -103,12 +103,11 @@
 <li><a href="#sec-1-1">1.1 Requirements</a></li>
 <li><a href="#sec-1-2">1.2 Install and Set Up</a>
 <ul>
-<li><a href="#sec-1-2-1">1.2.1 Install AngularJS</a></li>
-<li><a href="#sec-1-2-2">1.2.2 Install the Express web framework, Karma test runner and Jasmine test framework</a></li>
-<li><a href="#sec-1-2-3">1.2.3 Setting up the web server</a></li>
-<li><a href="#sec-1-2-4">1.2.4 Running the web server</a></li>
-<li><a href="#sec-1-2-5">1.2.5 Setting up Karma for Unit Testing</a></li>
-<li><a href="#sec-1-2-6">1.2.6 Running the Karma Unit Tests</a></li>
+<li><a href="#sec-1-2-1">1.2.1 Project Structure</a></li>
+<li><a href="#sec-1-2-2">1.2.2 Install AngularJS</a></li>
+<li><a href="#sec-1-2-3">1.2.3 Install the Karma test runner and Jasmine test framework</a></li>
+<li><a href="#sec-1-2-4">1.2.4 Setting up Karma for Unit Testing</a></li>
+<li><a href="#sec-1-2-5">1.2.5 Running the Karma Unit Tests</a></li>
 </ul></li>
 </ul>
 </li>
@@ -173,19 +172,20 @@
 Our hello world project has the following requirements:
 </p>
 <ul>
-<li>Node.js and NPM (Node Package Manager)
+<li><a href="http://nodejs.org/">Node.js</a> and <a href="https://npmjs.org/">NPM (Node Package Manager)</a>
 </li>
-<li>AngularJS
+<li><a href="http://angularjs.org/">AngularJS</a>
 </li>
-<li>Express web framework
+<li><a href="http://karma-runner.github.io/">Karma</a> test runner
 </li>
-<li>Karma test runner
-</li>
-<li>Jasmine test framework
+<li><a href="http://pivotal.github.io/jasmine/">Jasmine</a> unit test framework
 </li>
 </ul>
 
 
+<p>
+Note: Node.js is only used for running Karma and Jasmine.
+</p>
 </div>
 
 </div>
@@ -198,17 +198,48 @@ Our hello world project has the following requirements:
 </div>
 
 <div id="outline-container-1-2-1" class="outline-4">
-<h4 id="sec-1-2-1"><span class="section-number-4">1.2.1</span> Install AngularJS</h4>
+<h4 id="sec-1-2-1"><span class="section-number-4">1.2.1</span> Project Structure</h4>
 <div class="outline-text-4" id="text-1-2-1">
 
-<p>Download <a href="http://www.angularjs.org/">AngularJS</a> and place it in the <code>lib/</code> directory. The <code>lib/</code>
+<p>AngularJS doesn't impose any particular project structure on you.
+</p>
+<p>
+For this tutorial, the following project structure is used:
+</p><ul>
+<li>lib/
+</li>
+<li>images/
+</li>
+<li>js/
+<ul>
+<li>helloworld/
+</li>
+</ul>
+
+</li>
+<li>styles/
+</li>
+<li>tests/
+</li>
+</ul>
+
+
+<p>
+JavaScript source code is in <code>js/</code>, the CSS is in <code>styles/</code> and any
+images go into <code>images/</code>. Test code is in <code>tests/</code>. The <code>lib/</code>
 directory is where JavaScript and CSS libraries are placed so that we
 don't get confused between our code and external code that others have
 written.
 </p>
-<p>
-Our JavaScript is in <code>js/</code>, the CSS is in <code>styles/</code> and any images go
-into <code>images/</code>.
+</div>
+
+</div>
+
+<div id="outline-container-1-2-2" class="outline-4">
+<h4 id="sec-1-2-2"><span class="section-number-4">1.2.2</span> Install AngularJS</h4>
+<div class="outline-text-4" id="text-1-2-2">
+
+<p>Download <a href="http://www.angularjs.org/">AngularJS</a> and place it in the <code>lib/</code> directory.
 </p>
 
 
@@ -228,9 +259,9 @@ into <code>images/</code>.
 
 </div>
 
-<div id="outline-container-1-2-2" class="outline-4">
-<h4 id="sec-1-2-2"><span class="section-number-4">1.2.2</span> Install the Express web framework, Karma test runner and Jasmine test framework</h4>
-<div class="outline-text-4" id="text-1-2-2">
+<div id="outline-container-1-2-3" class="outline-4">
+<h4 id="sec-1-2-3"><span class="section-number-4">1.2.3</span> Install the Karma test runner and Jasmine test framework</h4>
+<div class="outline-text-4" id="text-1-2-3">
 
 <p>We create a <code>package.json</code> so that we can list the dependencies of our
 project which lets us use <code>npm</code> to automatically install them.
@@ -243,7 +274,6 @@ project which lets us use <code>npm</code> to automatically install them.
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "express": "3.4.0",
     "karma": "0.10.2",
     "karma-firefox-launcher": "0.1.0",
     "karma-jasmine": "0.1.3"
@@ -253,61 +283,16 @@ project which lets us use <code>npm</code> to automatically install them.
 
 
 <p>
-<a href="http://expressjs.com/">Express</a> is a web framework for Node, we'll be using it to serve up the
-templates. <a href="http://karma-runner.github.io/">Karma</a> is a test runner and it uses the <a href="http://pivotal.github.io/jasmine/">Jasmine</a> test
-framework. Karma lets us run unit tests and end to end tests. The
-Jasmine test framework gives us functions for unit testing.
-</p>
-<p>
-Note: You don't have to use the Express web framework, you can use any
-other web server to serve up the tutorial files.
+<a href="http://karma-runner.github.io/">Karma</a> is a test runner and it uses the <a href="http://pivotal.github.io/jasmine/">Jasmine</a> test framework. Karma
+lets us run unit tests and end to end tests. The Jasmine test
+framework gives us functions for unit testing.
 </p></div>
 
 </div>
 
-<div id="outline-container-1-2-3" class="outline-4">
-<h4 id="sec-1-2-3"><span class="section-number-4">1.2.3</span> Setting up the web server</h4>
-<div class="outline-text-4" id="text-1-2-3">
-
-<p>We need to setup the Express web server to serve up our files. The web
-server runs on port 3000.
-</p>
-
-
-
-<pre class="example">var express = require('express');
-var app = express();
-
-// Serves up all files in the current directory
-// NOT SAFE FOR PRODUCTION USE, USE ONLY FOR LOCAL DEVELOPMENT AND TESTING
-app.use(express.static(__dirname))
-
-app.listen(3000);
-</pre>
-
-</div>
-
-</div>
-
 <div id="outline-container-1-2-4" class="outline-4">
-<h4 id="sec-1-2-4"><span class="section-number-4">1.2.4</span> Running the web server</h4>
+<h4 id="sec-1-2-4"><span class="section-number-4">1.2.4</span> Setting up Karma for Unit Testing</h4>
 <div class="outline-text-4" id="text-1-2-4">
-
-<p>You can run the web server like this:
-</p>
-
-
-
-<pre class="example">node app.js
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-1-2-5" class="outline-4">
-<h4 id="sec-1-2-5"><span class="section-number-4">1.2.5</span> Setting up Karma for Unit Testing</h4>
-<div class="outline-text-4" id="text-1-2-5">
 
 <p>Before we can get to unit testing the controller, we have to create
 configuration file for Karma.
@@ -407,9 +392,9 @@ Here's how it looks put together:
 
 </div>
 
-<div id="outline-container-1-2-6" class="outline-4">
-<h4 id="sec-1-2-6"><span class="section-number-4">1.2.6</span> Running the Karma Unit Tests</h4>
-<div class="outline-text-4" id="text-1-2-6">
+<div id="outline-container-1-2-5" class="outline-4">
+<h4 id="sec-1-2-5"><span class="section-number-4">1.2.5</span> Running the Karma Unit Tests</h4>
+<div class="outline-text-4" id="text-1-2-5">
 
 <p>You can run the unit tests like this:
 </p>
@@ -1391,7 +1376,7 @@ $apply to go through the Angular life cycle.
 </div>
 
 <div id="postamble">
-<p class="date">Date: 2013-10-09 16:23:23 EDT</p>
+<p class="date">Date: 2013-10-09 16:54:30 EDT</p>
 <p class="author">Author: Rudolf Olah</p>
 <p class="creator">Org version 7.8.11 with Emacs version 24</p>
 <a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
