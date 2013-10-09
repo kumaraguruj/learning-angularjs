@@ -18,7 +18,7 @@ angular.module('helloworldApp').controller(
         },
         {
           'title': 'Learn AngularJS in 24 Hours, 2nd Edition',
-          'price': '32.00'
+          'price': '9.95'
         }
       ];
       
