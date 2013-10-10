@@ -1,0 +1,97 @@
+#+TITLE: AngularJS Project Structures
+#+AUTHOR: Rudolf Olah
+
+A listing of possible project structures that have been spotted in
+tutorials, books and real-world AngularJS projects.
+
+* Learning AngularJS Tutorial
+Project: https://github.com/omouse/learning-angularjs
+
+- lib/
+- images/
+- js/
+  - app/
+- styles/
+- tests/
+- karma.conf.js
+- index.html
+
+* angular-seed
+Project: https://github.com/angular/angular-seed
+
+- app/
+  - css/
+  - img/
+  - js/
+  - lib/
+  - partials/
+  - index.html
+- config/
+  - karma.conf.js
+- logs/
+- scripts/
+- test/
+  - e2e/
+  - lib/
+  - unit/
+
+* AngularUI ng-grid
+Project: https://github.com/angular-ui/ng-grid
+
+This is a module which is structured somewhat differently from a
+regular project.
+
+- build/
+  - ng-grid.js
+- config/
+  - karma-e2e.conf.js
+  - karma-midway.conf.js
+  - karma.conf.js
+- lib/
+  - bootstrap/
+  - angular.js
+  - jquery.js
+- plugins/
+  - ng-grid-csv-export.js
+- scripts/
+- src/
+  - classes/
+    - column.js
+    - eventProvider.js
+  - directives/
+    - ng-cell.js
+    - ng-grid.js
+  - filters/
+    - checkmark.js
+    - ngColumns.js
+  - i18n/
+    - en.js
+    - pt-br.js
+    - zh-cn.js
+  - less/
+    - cell.less
+    - menu.less
+    - row.less
+  - services/
+    - DomUtilityService.js
+    - UtilityService.js
+  - templates/
+    - aggregateTemplate.html
+    - headerCellTemplate.html
+- test/
+  - e2e/
+  - lib/
+    - angular/
+    - jasmine/
+  - midway/
+    - templates/
+  - unit/
+    - directivesSpec.js
+    - filtersSpec.js
+    - i18nSpec.js
+  - karma.conf.js
+  - scenarios.js
+- workbench/
+  - partials/
+  - styling/
+  - templating/
