@@ -95,3 +95,116 @@ regular project.
   - partials/
   - styling/
   - templating/
+
+* ng-boilerplate
+Project: https://github.com/ngbp/ng-boilerplate
+
+- karma/
+  - karma-unit.tpl.js
+- src/
+  - app/
+    - about/
+      - about.js
+      - about.tpl.html
+    - home/
+      - home.js
+      - home.less
+      - home.spec.js
+      - home.tpl.html
+    - app.js
+    - app.spec.js
+  - assets/
+  - common/
+    - plusOne/
+      - plusOne.js
+  - less/
+    - main.less
+  - index.html
+- vendor/
+  - placeholders/
+    - angular-placeholders-0.0.1-SNAPSHOT.min.js
+- LICENSE
+- README
+- package.json
+* angular-app
+Project: https://github.com/angular-app/angular-app
+
+- client/
+  - src/
+    - app/
+      - dashboard/
+        - dashboard.js
+        - dashboard.tpl.html
+      - projects/
+        - productbacklog/
+          - productbacklog-edit.tpl.html
+          - productbacklog-list.tpl.html
+          - productbacklog.js
+        - projects.js
+        - projects-list.tpl.html
+      - app.js
+      - header.tpl.html
+    - assets/
+      - img/
+      - favicon.ico
+    - common/
+      - directives/
+        - crud/
+          - crud.js
+          - crudButtons.js
+        - modal.js
+      - resources/
+        - backlog.js
+        - projects.js
+        - sprints.js
+      - security/
+        - login/
+          - LoginFormController.js
+          - form.tpl.html
+          - login.js
+        - authorization.js
+        - retryQueue.js
+      - services/
+        - breadcrumbs.js
+        - crud.js
+        - crudRouteProvider.js
+        - localizedMessages.js
+    - less/
+      - stylesheet.less
+  - test/
+    - config/
+      - unit.js
+    - unit/
+      - app/
+        - admin/
+          - projects/
+            - admin-projects.spec.js
+        - dashboard/
+          - dashboard.spec.js
+      - common/
+        - directives/
+          - gravatar.spec.js
+        - security/
+          - login/
+            - login-form.spec.js
+            - login-toolbar.spec.js
+          - authorization.spec.js
+        - services/
+          - breadcrumbs.spec.js
+          - httpRequestTracker.spec.js
+    - vendor/
+      - angular/
+        - angular-mocks.js
+  - vendor/
+    - angular/
+    - angular-ui/
+    - bootstrap/
+    - jquery/
+  - package.json
+- server/
+  - cert/
+  - lib/
+  - test/
+  - package.json
+- LICENSE
+- README
