@@ -208,3 +208,52 @@ Project: https://github.com/angular-app/angular-app
   - package.json
 - LICENSE
 - README
+* clevertech-angular-seed
+Project: https://github.com/clevertech/cleverstack-angular-seed
+
+- app/
+  - images/
+  - scripts/
+    - controllers/
+    - directives/
+    - filters/
+    - services/
+    - app.js
+    - config.js
+    - main.js
+    - routes.js
+  - styles/
+    - less/
+      - application.less
+    - application.css
+    - screen.css
+  - views/
+    - partials/
+      - navbar.html
+    - home.html
+    - login.html
+  - index.html
+- scripts/
+  - kill-phantomjs.sh
+  - setup.js
+- test/
+  - e2e/
+    - app/
+      - index.js
+    - seed/
+      - auth.js
+    - runner.html
+    - test-index.html
+  - mocks/
+    - services/
+      - user.js
+  - unit/
+    - controllers/
+      - home.js
+    - services/
+      - auth.js
+    - test-main.js
+- Gruntfile.js
+- bower.json
+- karma.conf.js
+- package.json
