@@ -1,0 +1,667 @@
+#+TITLE: AngularJS API and Guide
+
+This is both a guide and set of API docs for the AngularJS framework.
+
+AngularJS version: 1.2.1
+
+Licensed under the [[https://www.gnu.org/copyleft/fdl.html][GNU Free Documentation License 1.3]].
+
+* Introduction
+AngularJS is a fantastic javascript framework which lets front-end web
+developers build great works on top of it. However, these great works
+are built, like the pyramids, by throwing hours away on
+trial-and-error and through sheer determination to get something done.
+
+The written word has been the main driver of humankind's
+progress. Without it, scientists and engineers and other makers would
+be pursuing trial and error far more than they do now.
+
+AngularJS's initial documentation has been haphazard and hasn't
+covered nearly enough ideas so that developers can keep them in their
+heads. The goal of this API and guide is to provide an accessible list
+of concepts, examples and in-depth API documentation which can be read
+through and absorbed and then later be used as a quick reference.
+* Concepts
+The AngularJS framework provides a new way of thinking about designing
+web applications. It extends the MVC (Model-View-Controller) pattern
+and adds patterns such as Dependency Injection, Factory
+classes/methods, and others.
+
+These concepts give us a higher level framework for writing our web
+app.
+** Dependency Injection
+Dependency injection allows the substitution of the classes that a
+class depends on with replacements.  Instead of changing your class to
+create a different object that it depends on, you simply pass in the
+different object when creating your class.
+
+The advantage of dependency injection is that it helps us avoid
+hard-coded class dependencies. This has the happy side-effect of
+making it much easier to write unit and integration tests for classes.
+
+Here, we are not using dependency injection:
+
+#+BEGIN_EXAMPLE
+var Engine = function (topSpeed) {
+  this.topSpeed = topSpeed;
+  this.displayTopSpeed = function () {
+    console.log('top speed: ' + this.topSpeed + 'mph');
+  };
+}
+
+var SlowCar = function () {
+  this.engine = new Engine(25);
+  this.display = function () {
+    this.engine.displayTopSpeed();
+  };
+};
+
+var myCar = new SlowCar();
+myCar.display();
+#+END_EXAMPLE
+
+Our car will be a slow car with a top speed of 25mph. There's no way
+for us to change that top speed in the above example.
+
+What if we could change the engine of the slow car to a rocket engine?
+We can do this by using dependency injection:
+
+#+BEGIN_EXAMPLE
+var SlowCarCustomEngine = function(engineToUse) {
+  this.engine = engineToUse;
+  this.display = function () {
+    this.engine.displayTopSpeed();
+  };
+};
+
+var rocketEngine = new Engine(500);
+var slowEngine = new Engine(25);
+var myCarCustomized = new SlowCarCustomEngine(rocketEngine);
+myCarCustomized.display();
+myCarCustomized.engine = slowEngine;
+myCarCustomized.display();
+#+END_EXAMPLE
+
+With dependency injection, the SlowCarCustomEngine class has a
+parameter, the engine to use. We can now swap out the engine at any
+time.
+
+*** Listing Dependencies for Classes
+In AngularJS, dependency injection is used everywhere. When you define
+a new controller, service, directive or any other AngularJS class you
+can define a set of dependencies to inject.
+** Scopes in Views
+Scopes are for storing variables that you want to share between the
+controllers and the HTML templates.
+** Controllers
+** Directives
+Directives are objects that encapsulate DOM manipulation. They provide
+HTML elements and attributes which we can use to make our HTML
+higher-level. Instead of seeing a form with ten labels and inputs as
+simply that, we can name that set of fields as an "entry-form"
+element. This lets us place all associated code for the "entry-form"
+within the definition of the "entry-form" directive rather than
+scattered through the rest of the code.
+** Services and Service Providers
+** Filters
+** Models
+** Data Binding
+* Utilties
+** forEach
+** setHashKey
+- Parameters ::
+  - obj :: an Object
+  - h :: the hashkey (!truthy to delete the hashkey)
+- Returns :: nothing
+
+Sets or clear the hashkey for an object.
+
+*** Examples
+** extend
+- Parameters ::
+  - dst :: Destination object
+  - ... :: Source object(s)
+- Returns :: reference to =dst=
+- See ::
+  - [[* forEach][forEach]]
+  - [[* setHashKey][setHashKey]]
+
+Extends the destination object =dst= by copying all of the properties
+from the =src= object(s) to =dst=. You can specify multiple =src=
+objects.
+
+*** Examples
+
+** <<minErr>>minErr(module)
+- Parameters ::
+  - module :: The namespace to use for the new minErr instance.
+- Returns :: a function of the form =function(string, string, ...)=
+             which returns an Error after it is called. The first
+             string is the prefix, the second is the string template
+             for the error message, and the rest of the arguments are
+             template variables.
+
+This function provides a utility for producing rich Error messages
+within Angular.
+
+If fewer arguments are specified than necessary for interpolation, the extra
+interpolation markers will be preserved in the final string.
+
+Since data will be parsed statically during a build step, some restrictions
+are applied with respect to how minErr instances are created and called.
+Instances should have names of the form namespaceMinErr for a minErr created
+using minErr('namespace') . Error codes, namespaces and template strings
+should all be static strings, not variables or general expressions.
+
+*** Examples
+
+#+BEGIN_EXAMPLE
+var exampleMinErr = minErr('example');
+throw exampleMinErr('one', 'This {0} is {1}', foo, bar);
+#+END_EXAMPLE
+
+The above creates an instance of minErr in the example namespace. The
+resulting error will have a namespaced error code of example.one.  The
+resulting error will replace {0} with the value of foo, and {1} with the
+value of bar. The object is not restricted in the number of arguments it can
+take.
+
+**** Numbered error template arguments
+
+#+BEGIN_EXAMPLE
+var myModuleErr = minErr('myModule');
+throw myModuleErr('prefix', 'templateArgs: {0}', someArgument);
+#+END_EXAMPLE
+
+**** Named error template arguments
+
+#+BEGIN_EXAMPLE
+var myModuleErr = minError('myModule');
+throw myModuleErr('prefix', 'templateArgs: {name}', {'name': 'AngularJS'});
+#+END_EXAMPLE
+
+** lowercase
+Converts a string to lowercase
+
+- Parameters ::
+  - string
+- Returns :: Lowercase string
+
+*** Examples
+
+#+BEGIN_EXAMPLE
+lowercase('Hello'); // returns 'hello'
+lowercase('HELLO'); // returns 'hello'
+lowercase('hello'); // returns 'hello'
+#+END_EXAMPLE
+
+** <<parseHeaders>>parseHeaders(headers)
+- Parameters ::
+  - headers :: Raw headers as a string
+- Returns :: parsed headers as key-value object
+- See ::
+  - [[forEach][forEach]]
+  - [[lowercase][lowercase]]
+* Service Providers
+** ng.$controllerProvider - $ControllerProvider
+Service responsible for instantiating controllers.
+*** <<$ControllerProvider.register>>register(name, constructor)
+- Parameters ::
+  - name :: Controller name, or an object map of controllers where the
+            keys are the names and the values are the constructors.
+  - constructor :: Controller constructor fn (optionally decorated with DI annotations in the array notation).
+- See ::
+  - [[* extend][extend]]
+
+*** <<$ControllerProvider.$get>>$get(expression, locals)
+- Dependencies ::
+  - [[$injector][$injector]]
+  - [[$window][$window]]
+- Parameters ::
+  - expression ::
+- Returns :: instance of the given controller
+- Throws :: a [[minErr][minErr]]
+
+If =expression= is a function, then this method is considered to be
+the controller constructor function.
+
+Otherwise it's =expression= is a string which is used to retrieve the
+controller constructor using the following steps:
+
+- check if a controller with given name is registered via [[$ControllerProvider][$controllerProvider]]
+- check if evaluating the string on the current scope returns a constructor
+- check `window[constructor]` on the global `window` object
+
+*** Examples
+Registering a controller:
+
+#+BEGIN_EXAMPLE
+
+#+END_EXAMPLE
+
+Registering multiple controllers:
+
+#+BEGIN_EXAMPLE
+
+#+END_EXAMPLE
+** ng.$filter - $FilterProvider
+*** <<$FilterProvider.register>>register(name, factory)
+- Parameters ::
+  - name :: Name of the filter (string)
+  - fn :: The filter factory function which is injectable
+
+Register a filter factory function.
+*** <<$FilterProvider.$get>>$get($injector)
+*** Examples
+**** Registering a filter
+
+#+BEGIN_EXAMPLE
+#+END_EXAMPLE
+
+**** Using a filter
+
+#+BEGIN_EXAMPLE
+{{ expression | my_filter }}
+#+END_EXAMPLE
+** ng.$document - $DocumentProvider
+A [[angular.element][jQuery (lite)]]-wrapped reference to the browser's =window.document=.
+*** <<$DocumentProvider.$get>>$get()
+- Dependencies :: [[$window][$window]]
+** ng.$exceptionHandler - $ExceptionHandler
+Any uncaught exception in angular expressions is delegated to this
+service. The default implementation simply delegates to `$log.error`
+which logs it into the browser console.
+*** <<$ExceptionHandler.$get>>$get(exception, cause)
+- Dependencies :: [[$log][$log]]
+- Parameters ::
+  - exception :: Error, an exception associated with the error
+  - cause :: optional string with more information about the context
+             in which the error was thrown.
+** ng.$httpProvider - 
+** <<ng.$location>>$location, Location Service
+The location service handles the current location of the app. It
+reflects changes in the browser address bar and can change what's in
+the browser address bar.
+
+The service depends on [[ng.$rootScope][$rootScope]], [[ng.$browser][$browser]], [[ng.$sniffer][$sniffer]], and
+[[ng.$rootElement][$rootElement]].
+
+The service uses an HTML5-based URL if html5 mode is enabled,
+otherwise it falls back and uses a hashbang based url such as
+=example.com/#/index=.
+
+Methods of the $location service:
+- =absUrl(): string=
+- =hashPrefix(string prefix)=
+- =hashPrefix(): string=
+- =host(): string=
+- =html5Mode(boolean isEnabled): boolean=
+- =html5Mode(): boolean=
+- =path(string newPath): string=
+- =path(): string=
+- =port(): string=
+- =protocol(): string=
+- =search(string search, string paramValue): string=
+- =search(): string=
+- =url(string url, string replace): string=
+- =url(): string=
+
+*** =$location.hashPrefix=
+Setter/getter for setting the hash prefix.
+
+#+BEGIN_SRC javascript
+$location.hashPrefix('');        // example.com/#/index
+$location.hashPrefix('awesome'); // example.com/#/awesome/index
+#+END_SRC
+
+*** =$location.html5Mode()=
+Setter/getter for setting whether or not HTML5 mode is enabled. When
+HTML5 mode is enabled, the URLs will not include a hashbang.
+
+#+BEGIN_SRC javascript
+$location.html5Mode(true);  // example.com/index/
+$location.html5Mode(false); // example.com/#/index
+#+END_SRC
+
+*** =$location.path(string newPath)=
+Sets the path of the browser to =newPath=. The parameter must start
+with a forward slash, '/'. The $location service takes care of whether
+or not to use a hashbang URL.
+
+*** =$location.path(): string=
+Returns the current path of the app, based on what's in the browser
+address bar.
+
+** <<ng.$rootScope>>$rootScope
+** <<ng.$browser>>$browser
+** <<ng.$sniffer>>$sniffer
+** <<ng.$rootElement>>$rootElement
+* Built-in Filters
+- [[currencyFilter][currency]]
+- [[dateFilter][date]]
+- [[filterFilter][filter]]
+- [[jsonFilter][json]]
+- [[limitToFilter][limitTo]]
+- [[lowercaseFilter][lowercase]]
+- [[numberFilter][number]]
+- [[orderByFilter][orderBy]]
+- [[uppercaseFilter][uppercase]]
+** <<currencyFilter>>currencyFilter(amount, [string])
+- Dependencies ::
+ - $locale :: locale service
+- Parameters ::
+  - amount :: input to filter
+  - symbol :: optional, currency symbol or identifier to be displayed.
+- Returns :: Formatted Number
+
+Formats a number as a currency (i.e. $1,234.56). When no currency
+symbol is provided, default symbol for current locale is used.
+
+*** Examples
+
+Default currency symbol:
+
+#+BEGIN_EXAMPLE
+{{ 25.09 | currency }}
+#+END_EXAMPLE
+
+Custom currency identifer:
+
+#+BEGIN_EXAMPLE
+{{ 32.11 | currency:"USD$" }}
+#+END_EXAMPLE
+** <<dateFilter>>dateFilter(date, [format])
+- Dependencies ::
+  - $locale :: Locale service
+- Parameters ::
+  - date :: Date, number, or string. Date to format either as Date
+            object, milliseconds (string or number) or various ISO
+            8601 datetime string formats
+            (e.g. =yyyy-MM-ddTHH:mm:ss.SSSZ= and its shorter versions
+            like =yyyy-MM-ddTHH:mmZ=, =yyyy-MM-dd= or
+            =yyyyMMddTHHmmssZ=). If no timezone is specified in the
+            string input, the time is considered to be in the local
+            timezone.
+  - format :: optional string. If not specified, 'mediumDate' is used.
+
+The =format= string can also be one of the following predefined
+localizable formats:
+
+- =medium= :: equivalent to '=MMM d, y h:mm:ss a=' for en__US locale
+              (e.g. Sep 3, 2010 12:05:08 pm)
+- =short= :: equivalent to '=M/d/yy h:mm a=' for en__US locale
+             (e.g. 9/3/10 12:05 pm)
+- =fullDate= :: equivalent to '=EEEE, MMMM d,y=' for en__US locale
+                (e.g. Friday, September 3, 2010)
+- =longDate= :: equivalent to '=MMMM d, y=' for en__US locale
+                (e.g. September 3, 2010)
+- =mediumDate= :: equivalent to '=MMM d, y=' for en__US locale
+                  (e.g. Sep 3, 2010)
+- =shortDate= :: equivalent to '=M/d/yy=' for en__US locale
+                 (e.g. 9/3/10)
+- =mediumTime= :: equivalent to '=h:mm:ss a=' for en__US locale
+                  (e.g. 12:05:08 pm)
+- =shortTime= :: equivalent to '=h:mm a=' for en__US locale (e.g. 12:05
+                 pm)
+
+The =format= string can contain literal values. These need to be
+quoted with single quotes (e.g. ="h 'in the morning'"=). In order to
+output single quote, use two single quotes in a sequence (e.g. ="h
+'o''clock'"=).
+
+*** Examples
+#+BEGIN_EXAMPLE
+{{ 1288323623006 | date:'medium' }}
+{{ 1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z' }}
+{{ '1288323623006' | date:'MM/dd/yyyy @ h:mma' }}
+#+END_EXAMPLE
+* Creating a Filter
+* Creating a Controller
+* Creating a Service
+You can use the =service= method on a =angular.Module= object to
+create a new service. It is basically an alias for =$provide.service=
+method.
+
+The first argument is the name of the service, the second argument is
+the function used as a constructor to create the service. Note that
+you can use the DI (Dependency Injection) notation with the =service=
+method.
+
+#+BEGIN_SRC javascript
+angular.module('myModule').service(
+  'myService',
+  function(dependency) {
+    this.dependency = dependency;
+    this.some_method = function() {};
+  }
+);
+#+END_SRC
+
+Using DI:
+
+#+BEGIN_SRC javascript
+angular.module('myModule').service(
+  'myOtherService',
+  [
+    '$http', '$resource',
+    function($http, $resource) {
+    }
+  ]
+);
+#+END_SRC
+
+The function returns the service class which is later instantiated by
+Angular and passed to whatever functions require it as a
+dependency. This is also known as the Factory pattern.
+
+The convention for the naming of the service is camel case starting
+with a lower case letter. This indicates that it's an instance.
+
+This is how we would use the above service in a controller:
+
+#+BEGIN_SRC javascript
+angular.module('myApp').controller(
+  'MyController',
+  function(myService) {
+    myService.some_method();
+  }]
+#+END_SRC
+
+* <<angular.module>>angular.module
+* <<angular.element>>angular.element, jQuery, jqLite
+Wraps a raw DOM element or HTML string as a [[http://jquery.com][jQuery]] element.
+
+If jQuery is available, =angular.element= is an alias for the [[http://api.jquery.com/jQuery/][jQuery]]
+function. If jQuery is not available, =angular.element= delegates to
+Angular's built-in subset of jQuery, called "jQuery lite" or "jqLite."
+
+jqLite is a tiny, API-compatible subset of jQuery that allows Angular
+to manipulate the DOM in a cross-browser compatible way. jqLite
+implements only the most commonly needed functionality with the goal
+of having a very small footprint.
+
+To use jQuery, simply load it before =DOMContentLoaded= event fired.
+
+** Angular's jqLite
+jqLite provides only the following jQuery methods:
+
+- [[http://api.jquery.com/addClass/][addClass]]
+- [[http://api.jquery.com/after/][after]]
+- [[http://api.jquery.com/append/][append]]
+- [[http://api.jquery.com/attr/][attr]]
+- [[http://api.jquery.com/on/][bind]], does not support namespaces, selectors or eventData
+- [[http://api.jquery.com/children/][children]], does not support selectors
+- [[http://api.jquery.com/clone/][clone]]
+- [[http://api.jquery.com/contents/][contents]]
+- [[http://api.jquery.com/css/][css]]
+- [[http://api.jquery.com/data/][data]]<<angular jqlite data>>
+- [[http://api.jquery.com/eq/][eq]]
+- [[http://api.jquery.com/find/][find]], limited to lookups by tag name
+- [[http://api.jquery.com/hasClass/][hasClass]]
+- [[http://api.jquery.com/html/][html]]
+- [[http://api.jquery.com/next/][next]], does not support selectors
+- [[http://api.jquery.com/on/][on]], does not support namespaces, selectors or eventData
+- [[http://api.jquery.com/off/][off]], does not support namespaces or selectors
+- [[http://api.jquery.com/parent/][parent]], does not support selectors
+- [[http://api.jquery.com/prepend/][prepend]]
+- [[http://api.jquery.com/prop/][prop]]
+- [[http://api.jquery.com/ready/][ready]]
+- [[http://api.jquery.com/remove/][remove]]
+- [[http://api.jquery.com/removeAttr/][removeAttr]]
+- [[http://api.jquery.com/removeClass/][removeClass]]
+- [[http://api.jquery.com/removeData/][removeData]]
+- [[http://api.jquery.com/replaceWith/][replaceWith]]
+- [[http://api.jquery.com/text/][text]]
+- [[http://api.jquery.com/toggleClass/][toggleClass]]
+- [[http://api.jquery.com/triggerHandler/][triggerHandler]], passes a dummy event object to handlers.
+- [[http://api.jquery.com/off/][unbind]], does not support namespaces
+- [[http://api.jquery.com/val/][val]]
+- [[http://api.jquery.com/wrap/][wrap]]
+** jQuery/jqLite Extra Events
+Angular also provides the following additional events to both jQuery and jqLite:
+
+- $destroy :: AngularJS intercepts all jqLite/jQuery's DOM destruction
+              apis and fires this event on all DOM nodes being
+              removed.  This can be used to clean up any 3rd party
+              bindings to the DOM element before it is removed.
+** jQuery/jqLite Extra Methods
+Angular also provides the following additional methods to both jQuery and jqLite:
+*** controller(name)
+- Parameters ::
+  - name :: a string
+- Returns :: a Controller
+
+Retrieves the controller of the current element or its parent. By
+     default retrieves controller associated with the =ngController=
+     directive. If =name= is provided as camelCase directive name,
+     then the controller for this directive will be retrieved
+     (e.g. '=ngModel=').
+*** injector()
+Retrieves the injector of the current element or its parent.
+*** scope()
+Retrieves the [[$rootScope.Scope][scope]] of the current element or its parent.
+*** isolateScope()
+Retrieves an isolate [[$rootScope.Scope][scope]] if one is attached directly to the current
+element.  This getter should be used only on elements that contain a
+directive which starts a new isolate scope.  Calling =scope()= on this
+element always returns the original non-isolate scope.
+*** inheritedData()
+Same as [[angular jqlite data][data()]], but walks up the DOM until a value is found or the top
+parent element is reached.
+* ngResource: Interfacing with a REST API
+ngResource is a service that provides an interface to REST APIs.
+
+** Creating a Resource Object
+The =$resource= service returns a new Resource object which contains
+actions. The actions are how you interact with the REST API.
+
+When creating a new Resource object, you must provide the URL to the
+resource on the server:
+
+#+BEGIN_SRC javascript
+var Profile = $resource('/api/profile')
+#+END_SRC
+
+You can use URLs that have parameters to fill in:
+- =/api/profile/:profileId=
+- =/user/:userId/item/:itemId=
+
+*** Example of URL Parameters
+A full example of how to fill in parameters:
+
+#+BEGIN_SRC javascript
+var UserItem = $resource(
+  '/user/:userId/item/:itemId',
+  {
+    userId: 123,
+    itemId: '@'
+  }
+);
+#+END_SRC
+
+The =userId= will be filled in with the value "123", and the =itemId=
+can be filled in later on (as indicated by the use of the =@=, at
+sign).
+
+** Resource Actions
+Actions are the methods of a resource.
+
+The default actions are:
+- get
+- save
+- query
+- remove
+- delete
+
+Each action has an HTTP method type, such as "GET" or "POST".
+
+Resource objects have each action defined as a method:
+
+#+BEGIN_SRC javascript
+var Employee = $resource('/api/employee/:employeeId');
+Employee.get(...);
+Employee.save(...);
+#+END_SRC
+
+** Resource Action Methods: Static vs. Instance Methods
+Resources have two types of methods: static, and instance.  Static
+methods, are bound to the Resource prototype object. Methods that are
+prefixed with "$" are instance methods and are bound to the instance
+of the Resource object.
+
+Instance methods should be called when you're modifying an instance
+and saving it to the server or deleting it.
+
+Static methods should be called when you're retrieving instances from
+the server or performing some other non-destructive action.
+
+Example of retrieving an instance, modifying it, and then saving it:
+
+#+BEGIN_SRC javascript
+var Employee = $resource('/api/employee/:employeeId');
+
+// static method to retrieve an instance
+var me = Employee.get({ employeeId: 42 });
+
+// modifying the instance
+me.name = 'Rudolf';
+
+// using an instance method to save the modified instance
+me.$save();
+#+END_SRC
+
+** =get= Action
+The =get= action is used to retrieve a single instance of the resource
+from the API. It should be called as a static method.
+
+#+BEGIN_SRC javascript
+var Item = $resource('/api/item/:itemId');
+var instanceOfAnItem = Item.get({ itemId: 42 });
+#+END_SRC
+
+You can also provide a callback to the =get= action to be called when
+the action is completed successfully, and another callback for when
+the action fails:
+
+#+BEGIN_SRC javascript
+var Item = $resource('/api/item/:itemId');
+Item.get(
+  { itemId: 42 },
+  function(value, response_headers) {
+    console.log('success');
+  },
+  function(http_response) {
+    console.log('error');
+  }
+);
+#+END_SRC
+
+** =save= Action
+You can create Resource objects and save them on the server. This is
+done by creating a new instance of the Resource object and then
+calling the =$save= method. It should be called as an instance method.
+
+** =query= Action
+
+** =remove= Action
+** =delete= Action
